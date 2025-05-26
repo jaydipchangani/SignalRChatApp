@@ -40,4 +40,24 @@ public class ChatHub : Hub
             await Clients.Client(connectionId).SendAsync("ReceivePrivateMessage", fromUser, message);
         }
     }
+
+    // Join group
+    public async Task JoinGroup(string groupName)
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+        await Clients.Group(groupName).SendAsync("ShowMessage", $"{Context.ConnectionId} joined group {groupName}");
+    }
+
+    // Leave group
+    public async Task LeaveGroup(string groupName)
+    {
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+        await Clients.Group(groupName).SendAsync("ShowMessage", $"{Context.ConnectionId} left group {groupName}");
+    }
+
+    // Send message to group
+    public async Task SendMessageToGroup(string groupName, string user, string message)
+    {
+        await Clients.Group(groupName).SendAsync("ReceiveGroupMessage", user, message);
+    }
 }
